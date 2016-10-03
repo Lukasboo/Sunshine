@@ -19,6 +19,7 @@ import org.json.JSONObject;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by lucas on 01/10/16.
@@ -28,6 +29,8 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
 
     String postCode = "14400-BR";
     private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
+    ArrayAdapter adapter;
+    String[] fetchWeatherStrDates;
 
     public ForecastFragment() {
     }
@@ -46,15 +49,30 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
                 "Fri - Foggy 70/46",
                 "Sat - Sunny - 76/68" };
 
+        refresh();
+
+        /*final ArrayList<String> list = new ArrayList<>(
+                Arrays.asList(values));*/
+
         final ArrayList<String> list = new ArrayList<>(
-                Arrays.asList(values));
+                Arrays.asList(fetchWeatherStrDates));
+
+
             /*for (int i = 0; i < values.length; ++i) {
                 list.add(values[i]);
             }*/
-        ArrayAdapter adapter = new ArrayAdapter(getActivity(),
+        adapter = new ArrayAdapter(getActivity(),
                 R.layout.list_item_forecast,
                 R.id.list_item_forecast_textview,
                 list);
+
+
+
+
+
+
+
+        //adapter = getWeatherDataFromJson();
 
         setHasOptionsMenu(true);
 
@@ -76,15 +94,28 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
             case R.id.action_refresh:
                 refresh();
                 return true;
-            default: =
+            default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
     public void refresh(){
+        String[] fetchWeatherStr = null;
         FetchWeatherTask fetchWeatherTask = new FetchWeatherTask();
-        String[] fetchWeatherStr = fetchWeatherTask.execute(postCode);
-        getWeatherDataFromJson()
+        try {
+            fetchWeatherStr = fetchWeatherTask.execute(postCode).get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            fetchWeatherStrDates = getWeatherDataFromJson(fetchWeatherStr[0], 7);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
     }
 
     /* The date/time conversion code is going to be moved outside the asynctask later,

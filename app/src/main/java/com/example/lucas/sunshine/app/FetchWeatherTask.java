@@ -100,11 +100,16 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
                 }
             }
         }
-        return weatherStr;
-        //return forecastJsonStr;
+        //return weatherStr;
+        return new String[]{forecastJsonStr};
         //return null;
     }
 
+    /*@Override
+    protected String[] onPostExecute(String[] weatherStr) {
+        //super.onPostExecute(strings);
+        return weatherStr;
+    }*/
 }
 
 
