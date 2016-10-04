@@ -1,14 +1,15 @@
 package com.example.lucas.sunshine.app;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.format.Time;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -29,7 +30,7 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
 
     String postCode = "14400-BR";
     private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
-    ArrayAdapter adapter;
+    public ArrayAdapter adapter;
     String[] fetchWeatherStrDates;
 
     public ForecastFragment() {
@@ -51,33 +52,28 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
 
         refresh();
 
-        /*final ArrayList<String> list = new ArrayList<>(
-                Arrays.asList(values));*/
-
         final ArrayList<String> list = new ArrayList<>(
                 Arrays.asList(fetchWeatherStrDates));
 
-
-            /*for (int i = 0; i < values.length; ++i) {
-                list.add(values[i]);
-            }*/
         adapter = new ArrayAdapter(getActivity(),
                 R.layout.list_item_forecast,
                 R.id.list_item_forecast_textview,
                 list);
 
-
-
-
-
-
-
-        //adapter = getWeatherDataFromJson();
-
         setHasOptionsMenu(true);
-
         ListView listview = (ListView) rootView.findViewById(R.id.listview_forecast);
         listview.setAdapter(adapter);
+        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                //Toast.makeText(getActivity(), adapterView.getItemAtPosition(i).toString(), Toast.LENGTH_SHORT).show();
+                String foreCast = adapterView.getItemAtPosition(i).toString();
+                Intent intent = new Intent(getActivity(), DetailActivity.class)
+                        .putExtra(Intent.EXTRA_TEXT, foreCast);
+                startActivity(intent);
+            }
+        });
+
         return rootView;
     }
 
@@ -210,9 +206,9 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
             resultStrs[i] = day + " - " + description + " - " + highAndLow;
         }
 
-        for (String s : resultStrs) {
+        /*for (String s : resultStrs) {
             Log.v(LOG_TAG, "Forecast entry: " + s);
-        }
+        }*/
         return resultStrs;
 
     }

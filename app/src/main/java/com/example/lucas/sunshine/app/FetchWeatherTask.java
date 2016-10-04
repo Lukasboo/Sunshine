@@ -2,7 +2,6 @@ package com.example.lucas.sunshine.app;
 
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -54,7 +53,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
                     .appendQueryParameter("units", "metric")
                     .appendQueryParameter("cnt", "7");
             String urlBuild = uri.build().toString();
-            Log.d(LOG_TAG, urlBuild);
+            //Log.d(LOG_TAG, urlBuild);
             // Create the request to OpenWeatherMap, and open the connection
             URL url = new URL(urlBuild);
             urlConnection = (HttpURLConnection) url.openConnection();
@@ -84,7 +83,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
             }
             forecastJsonStr = buffer.toString();
         } catch (IOException e) {
-            Log.e(LOG_TAG, "Error ", e);
+            //Log.e(LOG_TAG, "Error ", e);
             // If the code didn't successfully get the weather data, there's no point in attemping
             // to parse it.
             return null;
@@ -96,7 +95,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
                 try {
                     reader.close();
                 } catch (final IOException e) {
-                    Log.e("ForecastFragment", "Error closing stream", e);
+                    //Log.e("ForecastFragment", "Error closing stream", e);
                 }
             }
         }
@@ -105,11 +104,6 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
         //return null;
     }
 
-    /*@Override
-    protected String[] onPostExecute(String[] weatherStr) {
-        //super.onPostExecute(strings);
-        return weatherStr;
-    }*/
 }
 
 
