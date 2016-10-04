@@ -5,4 +5,9 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_detail">DetailActivity</string>
     <string name="action_settings">Settings</string>
+    <string name="pref_location_key" translatable="false">14400-BR</string>
+    <string name="pref_location_label">Location</string>
+    <string name="pref_location_default_value" translatable="false">14400-BR</string>
+    <string name="title_activity_main2">Main2Activity</string>
+    <string name="title_activity_settings">SettingsActivity</string>
 </resources>

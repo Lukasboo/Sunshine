@@ -1,7 +1,9 @@
 package com.example.lucas.sunshine.app;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.format.Time;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -42,23 +44,15 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
 
-        String[] values = new String[] {
+        /*String[] values = new String[] {
                 "Today - Sunny -- 88/63",
                 "Tomorrow - Foggy - 70/46",
                 "Weds - Cloudy - 72/63",
                 "Thurs - Rainy - 64/51",
                 "Fri - Foggy 70/46",
-                "Sat - Sunny - 76/68" };
+                "Sat - Sunny - 76/68" };*/
 
-        refresh();
-
-        final ArrayList<String> list = new ArrayList<>(
-                Arrays.asList(fetchWeatherStrDates));
-
-        adapter = new ArrayAdapter(getActivity(),
-                R.layout.list_item_forecast,
-                R.id.list_item_forecast_textview,
-                list);
+        updateWeather();
 
         setHasOptionsMenu(true);
         ListView listview = (ListView) rootView.findViewById(R.id.listview_forecast);
@@ -78,6 +72,12 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        refresh();
+    }
+
+    @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.forecastfragment, menu);
         super.onCreateOptionsMenu(menu,inflater);
@@ -90,6 +90,9 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
             case R.id.action_refresh:
                 refresh();
                 return true;
+            case R.id.action_settings:
+                callSettings();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -98,6 +101,7 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
     public void refresh(){
         String[] fetchWeatherStr = null;
         FetchWeatherTask fetchWeatherTask = new FetchWeatherTask();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         try {
             fetchWeatherStr = fetchWeatherTask.execute(postCode).get();
         } catch (InterruptedException e) {
@@ -210,7 +214,23 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
             Log.v(LOG_TAG, "Forecast entry: " + s);
         }*/
         return resultStrs;
+    }
 
+    private void callSettings(){
+        Intent intent = new Intent(getActivity(), SettingsActivity.class);
+        startActivity(intent);
+    }
+
+    private void updateWeather(){
+        refresh();
+
+        final ArrayList<String> list = new ArrayList<>(
+                Arrays.asList(fetchWeatherStrDates));
+
+        adapter = new ArrayAdapter(getActivity(),
+                R.layout.list_item_forecast,
+                R.id.list_item_forecast_textview,
+                list);
     }
 
 }
