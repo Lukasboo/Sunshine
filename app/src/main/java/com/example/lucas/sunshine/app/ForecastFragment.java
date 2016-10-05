@@ -5,15 +5,18 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.format.Time;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,10 +33,12 @@ import java.util.concurrent.ExecutionException;
 
 public class ForecastFragment extends android.support.v4.app.Fragment {
 
-    String postCode = "14400-BR";
+    String postCode = "14400-BR"; //not use more
     private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
     public ArrayAdapter adapter;
     String[] fetchWeatherStrDates;
+    ArrayList<String> list;
+    ListView listview;
 
     public ForecastFragment() {
     }
@@ -52,29 +57,35 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
                 "Fri - Foggy 70/46",
                 "Sat - Sunny - 76/68" };*/
 
-        updateWeather();
+        //updateWeather();
+        refresh();
+        list = new ArrayList<>(
+                Arrays.asList(fetchWeatherStrDates));
+
+        adapter = new ArrayAdapter(getActivity(),
+                R.layout.list_item_forecast,
+                R.id.list_item_forecast_textview,
+                list);
 
         setHasOptionsMenu(true);
-        ListView listview = (ListView) rootView.findViewById(R.id.listview_forecast);
+        listview = (ListView) rootView.findViewById(R.id.listview_forecast);
         listview.setAdapter(adapter);
         listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                //Toast.makeText(getActivity(), adapterView.getItemAtPosition(i).toString(), Toast.LENGTH_SHORT).show();
                 String foreCast = adapterView.getItemAtPosition(i).toString();
                 Intent intent = new Intent(getActivity(), DetailActivity.class)
                         .putExtra(Intent.EXTRA_TEXT, foreCast);
                 startActivity(intent);
             }
         });
-
         return rootView;
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        refresh();
+        updateWeather();
     }
 
     @Override
@@ -93,11 +104,31 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
             case R.id.action_settings:
                 callSettings();
                 return true;
-            case R.id.metrics_settings:
-                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void callSettings(){
+        Intent intent = new Intent(getActivity(), SettingsActivity.class);
+        startActivity(intent);
+    }
+
+    private void updateWeather(){
+
+
+        refresh();
+        list = new ArrayList<>(
+                Arrays.asList(fetchWeatherStrDates));
+        adapter.clear();
+        adapter = new ArrayAdapter(getActivity(),
+                R.layout.list_item_forecast,
+                R.id.list_item_forecast_textview,
+                list);
+
+        listview.setAdapter(adapter);
+        adapter.notifyDataSetChanged();
+
     }
 
     public void refresh(){
@@ -217,22 +248,4 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
         }*/
         return resultStrs;
     }
-
-    private void callSettings(){
-        Intent intent = new Intent(getActivity(), SettingsActivity.class);
-        startActivity(intent);
-    }
-
-    private void updateWeather(){
-        refresh();
-
-        final ArrayList<String> list = new ArrayList<>(
-                Arrays.asList(fetchWeatherStrDates));
-
-        adapter = new ArrayAdapter(getActivity(),
-                R.layout.list_item_forecast,
-                R.id.list_item_forecast_textview,
-                list);
-    }
-
 }

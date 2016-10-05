@@ -2,6 +2,7 @@ package com.example.lucas.sunshine.app;
 
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -26,21 +27,14 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
 
         // Will contain the raw JSON response as a string.
         String forecastJsonStr = null;
-        String[] weatherStr = null;
+        //String[] weatherStr = null;
         try {
             // Construct the URL for the OpenWeatherMap query
             // Possible parameters are avaiable at OWM's forecast API page, at
             // http://openweathermap.org/API#forecast
-            //URL url = new URL("http://api.openweathermap.org/data/2.5/forecast/?q=Franca,SP&APPID=349e9189951daec1d08c3b15dccebe86");
-            //
-            //URL url = new URL("http://api.openweathermap.org/data/2.5/forecast/daily?zip=14400,BR&APPID=349e9189951daec1d08c3b15dccebe86&mode=json&units=metric&cnt=7");
-
             //certa
             //http://api.openweathermap.org/data/2.5/forecast/daily?zip=14400-BR&APPID=349e9189951daec1d08c3b15dccebe86&mode=json&units=metric&cnt=7
             //http://api.openweathermap.org/data/2.5/forecast/daily?zip=14400-BR&APPID=349e9189951daec1d08c3b15dccebe86&mode=json&units=metric&cnt=7
-            //.appendQueryParameter("zip", "14400-BR")
-            //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            //String prefsTest3 = prefs.getString("unit", "metric");
             Uri.Builder uri = new Uri.Builder();
             uri.scheme("http")
                     .authority("api.openweathermap.org")
@@ -53,6 +47,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
                     .appendQueryParameter("mode", "json")
                     .appendQueryParameter("units", preferences[1])
                     .appendQueryParameter("cnt", "7");
+
             String urlBuild = uri.build().toString();
             //Log.d(LOG_TAG, urlBuild);
             // Create the request to OpenWeatherMap, and open the connection
@@ -100,11 +95,8 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
                 }
             }
         }
-        //return weatherStr;
         return new String[]{forecastJsonStr};
-        //return null;
     }
-
 }
 
 
