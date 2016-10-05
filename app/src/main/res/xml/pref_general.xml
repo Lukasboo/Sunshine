@@ -10,5 +10,16 @@
         android:inputType="text"
         android:singleLine="true" />
 
+    <EditTextPreference
+        android:key="@string/pref_units_key"
+        android:title="@string/pref_units_label"
+        android:defaultValue="@string/pref_units_default_value"
+        android:inputType="text"
+        android:singleLine="true" />
+
+
+
+
+
 </PreferenceScreen>
 

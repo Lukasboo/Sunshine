@@ -93,6 +93,8 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
             case R.id.action_settings:
                 callSettings();
                 return true;
+            case R.id.metrics_settings:
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -103,7 +105,7 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
         FetchWeatherTask fetchWeatherTask = new FetchWeatherTask();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         try {
-            fetchWeatherStr = fetchWeatherTask.execute(postCode).get();
+            fetchWeatherStr = fetchWeatherTask.execute(prefs.getString("location", "14400-BR"), prefs.getString("unit", "metric")).get();
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
