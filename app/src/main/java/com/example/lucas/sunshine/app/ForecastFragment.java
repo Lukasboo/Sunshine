@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.ShareActionProvider;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -41,6 +42,7 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
     ListView listview;
     SharedPreferences prefs;
     String[] fetchWeatherStr;
+
 
     public ForecastFragment() {
     }
@@ -107,7 +109,6 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
                 callSettings();
                 return true;
             case R.id.map_settings:
-
                 Uri geoLocation = null;
                 try {
                     geoLocation = Uri.parse(valueOf(getGeoLocationDataFromJson(fetchWeatherStr[0])));

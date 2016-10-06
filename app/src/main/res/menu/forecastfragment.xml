@@ -12,5 +12,4 @@
         android:id="@+id/map_settings"
         android:title="@string/map_location" />
 
-
 </menu>
