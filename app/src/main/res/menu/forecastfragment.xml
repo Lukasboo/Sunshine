@@ -5,9 +5,12 @@
         android:id="@+id/action_refresh"
         android:title="Refresh"
         app:showAsAction="never"/>
-
     <item
         android:id="@+id/action_settings"
         android:title="Settings"/>
+    <item
+        android:id="@+id/map_settings"
+        android:title="@string/map_location" />
+
 
 </menu>

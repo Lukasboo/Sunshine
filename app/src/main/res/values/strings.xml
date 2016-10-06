@@ -12,6 +12,7 @@
     <string name="pref_units_default_value" translatable="false">metric</string>
     <string name="title_activity_settings">SettingsActivity</string>
     <string name="metrics">Metrics</string>
+    <string name="map_location">Map Location</string>
 
     <string-array name="entry_values_units">
         <item>metric</item>

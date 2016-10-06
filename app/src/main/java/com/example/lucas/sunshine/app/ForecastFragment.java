@@ -2,21 +2,19 @@ package com.example.lucas.sunshine.app;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.format.Time;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,6 +24,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.concurrent.ExecutionException;
+
+import static java.lang.String.valueOf;
 
 /**
  * Created by lucas on 01/10/16.
@@ -39,6 +39,8 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
     String[] fetchWeatherStrDates;
     ArrayList<String> list;
     ListView listview;
+    SharedPreferences prefs;
+    String[] fetchWeatherStr;
 
     public ForecastFragment() {
     }
@@ -104,6 +106,16 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
             case R.id.action_settings:
                 callSettings();
                 return true;
+            case R.id.map_settings:
+
+                Uri geoLocation = null;
+                try {
+                    geoLocation = Uri.parse(valueOf(getGeoLocationDataFromJson(fetchWeatherStr[0])));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                showMap(geoLocation);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -115,8 +127,6 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
     }
 
     private void updateWeather(){
-
-
         refresh();
         list = new ArrayList<>(
                 Arrays.asList(fetchWeatherStrDates));
@@ -128,13 +138,12 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
 
         listview.setAdapter(adapter);
         adapter.notifyDataSetChanged();
-
     }
 
     public void refresh(){
-        String[] fetchWeatherStr = null;
+        fetchWeatherStr = null;
         FetchWeatherTask fetchWeatherTask = new FetchWeatherTask();
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         try {
             fetchWeatherStr = fetchWeatherTask.execute(prefs.getString("location", "14400-BR"), prefs.getString("unit", "metric")).get();
         } catch (InterruptedException e) {
@@ -147,6 +156,15 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
             fetchWeatherStrDates = getWeatherDataFromJson(fetchWeatherStr[0], 7);
         } catch (JSONException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void showMap(Uri geoLocation) {
+
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(geoLocation);
+        if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+            startActivity(intent);
         }
 
     }
@@ -248,4 +266,31 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
         }*/
         return resultStrs;
     }
+
+    private String getGeoLocationDataFromJson(String forecastJsonStr)
+            throws JSONException {
+
+        final String OWM_CITY = "city";
+        final String OWM_COORD = "coord";
+        final String OWM_LON = "lon";
+        final String OWM_LAT = "lat";
+
+        JSONObject forecastJson = new JSONObject(forecastJsonStr);
+        JSONObject cityJson = forecastJson.getJSONObject(OWM_CITY);
+        JSONObject weatherArray = cityJson.getJSONObject(OWM_COORD);
+
+        String lat;
+        String lon;
+
+        String resultStrs = new String();
+
+        lat = weatherArray.getString(OWM_LAT);
+        lon = weatherArray.getString(OWM_LON);
+
+        resultStrs = "geo:" + lat + "," + lon;
+
+        return resultStrs;
+
+    }
+
 }

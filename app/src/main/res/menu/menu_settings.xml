@@ -11,4 +11,5 @@
         android:id="@+id/metrics_settings"
         android:title="@string/metrics"
         app:showAsAction="never" />
+
 </menu>

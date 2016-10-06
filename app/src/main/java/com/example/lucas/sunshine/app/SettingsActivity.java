@@ -84,4 +84,6 @@ public class SettingsActivity extends PreferenceActivity
     protected void onPrepareDialog(int id, Dialog dialog) {
         super.onPrepareDialog(id, dialog);
     }
+
+
 }
