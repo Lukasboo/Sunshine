@@ -3,13 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <EditTextPreference
-        android:key="@string/pref_location_key"
-        android:title="@string/pref_location_label"
-        android:defaultValue="@string/pref_location_default_value"
-        android:inputType="text"
-        android:singleLine="true" />
-
     <ListPreference
         android:defaultValue="@string/pref_units_default_value"
         android:dialogTitle="Units"

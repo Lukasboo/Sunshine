@@ -29,12 +29,44 @@ public class DetailActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+        Log.d("OnCreate", "OnCreate");
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, new PlaceholderFragment())
                     .commit();
         }
     }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d("OnPause", "OnPause");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d("OnStop", "OnStop");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d("OnResume", "OnResume");
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d("OnStart", "OnStart");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d("OnDestroy", "OnDestroy");
+    }
+
 
 
     @Override
