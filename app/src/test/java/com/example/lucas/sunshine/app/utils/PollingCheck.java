@@ -1,3 +1,9 @@
+package com.example.lucas.sunshine.app.utils;
+
+/**
+ * Created by lucas on 14/10/16.
+ */
+
 /*
  * Copyright (C) 2012 The Android Open Source Project
  *
@@ -15,7 +21,6 @@
  *
  * Note: This file copied from the Android CTS Tests
  */
-package com.example.lucas.sunshine.app.utils;
 
 import junit.framework.Assert;
 

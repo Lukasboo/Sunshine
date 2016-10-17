@@ -1,3 +1,9 @@
+package com.example.lucas.sunshine.app;
+
+/**
+ * Created by lucas on 14/10/16.
+ */
+
 /*
  * Copyright (C) 2014 The Android Open Source Project
  *
@@ -13,7 +19,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.lucas.sunshine.app;
 
 import android.test.suitebuilder.TestSuiteBuilder;
 

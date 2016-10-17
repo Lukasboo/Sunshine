@@ -1,5 +1,9 @@
 package com.example.lucas.sunshine.app.data;
 
+/**
+ * Created by lucas on 14/10/16.
+ */
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.ContentObserver;
@@ -10,7 +14,7 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.test.AndroidTestCase;
 
-import com.example.android.sunshine.app.utils.PollingCheck;
+import com.example.lucas.sunshine.app.utils.PollingCheck;
 
 import java.util.Map;
 import java.util.Set;
@@ -100,7 +104,6 @@ public class TestUtilities extends AndroidTestCase {
         Students: The functions we provide inside of TestProvider use this utility class to test
         the ContentObserver callbacks using the PollingCheck class that we grabbed from the Android
         CTS tests.
-
         Note that this only tests that the onChange function is called; it does not test that the
         correct Uri is returned.
      */

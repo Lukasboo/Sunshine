@@ -1,3 +1,9 @@
+package com.example.lucas.sunshine.app.data;
+
+/**
+ * Created by lucas on 16/10/16.
+ */
+
 /*
  * Copyright (C) 2014 The Android Open Source Project
  *
@@ -13,7 +19,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.example.lucas.sunshine.app.data;
 
 import android.net.Uri;
 import android.test.AndroidTestCase;
