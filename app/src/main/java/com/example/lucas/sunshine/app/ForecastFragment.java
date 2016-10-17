@@ -6,7 +6,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.format.Time;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,7 +15,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.ShareActionProvider;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -144,7 +142,7 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
 
     public void refresh(){
         fetchWeatherStr = null;
-        FetchWeatherTask fetchWeatherTask = new FetchWeatherTask();
+        FetchWeatherTask fetchWeatherTask = new FetchWeatherTask(getActivity(), adapter);
         prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         try {
             fetchWeatherStr = fetchWeatherTask.execute(prefs.getString("location", "14400-BR"), prefs.getString("unit", "metric")).get();

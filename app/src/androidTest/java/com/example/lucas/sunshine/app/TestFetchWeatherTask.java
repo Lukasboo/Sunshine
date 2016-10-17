@@ -1,8 +1,9 @@
 package com.example.lucas.sunshine.app;
 
 /**
- * Created by lucas on 16/10/16.
+ * Created by lucas on 17/10/16.
  */
+
 /*
  * Copyright (C) 2014 The Android Open Source Project
  *
@@ -20,6 +21,7 @@ package com.example.lucas.sunshine.app;
  */
 
 import android.test.AndroidTestCase;
+
 
 public class TestFetchWeatherTask extends AndroidTestCase {
     static final String ADD_LOCATION_SETTING = "Sunnydale, CA";

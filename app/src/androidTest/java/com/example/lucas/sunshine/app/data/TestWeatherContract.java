@@ -1,7 +1,7 @@
 package com.example.lucas.sunshine.app.data;
 
 /**
- * Created by lucas on 16/10/16.
+ * Created by lucas on 17/10/16.
  */
 
 /*
@@ -20,7 +20,6 @@ package com.example.lucas.sunshine.app.data;
  * limitations under the License.
  */
 
-import android.net.Uri;
 import android.test.AndroidTestCase;
 
 /*
@@ -36,15 +35,15 @@ public class TestWeatherContract extends AndroidTestCase {
     /*
         Students: Uncomment this out to test your weather location function.
      */
-    public void testBuildWeatherLocation() {
-        Uri locationUri = WeatherContract.WeatherEntry.buildWeatherLocation(TEST_WEATHER_LOCATION);
-        assertNotNull("Error: Null Uri returned.  You must fill-in buildWeatherLocation in " +
-                        "WeatherContract.",
-                locationUri);
-        assertEquals("Error: Weather location not properly appended to the end of the Uri",
-                TEST_WEATHER_LOCATION, locationUri.getLastPathSegment());
-        assertEquals("Error: Weather location Uri doesn't match our expected result",
-                locationUri.toString(),
-                "content://com.example.android.sunshine.app/weather/%2FNorth%20Pole");
-    }
+//    public void testBuildWeatherLocation() {
+//        Uri locationUri = WeatherContract.WeatherEntry.buildWeatherLocation(TEST_WEATHER_LOCATION);
+//        assertNotNull("Error: Null Uri returned.  You must fill-in buildWeatherLocation in " +
+//                        "WeatherContract.",
+//                locationUri);
+//        assertEquals("Error: Weather location not properly appended to the end of the Uri",
+//                TEST_WEATHER_LOCATION, locationUri.getLastPathSegment());
+//        assertEquals("Error: Weather location Uri doesn't match our expected result",
+//                locationUri.toString(),
+//                "content://com.example.android.sunshine.app/weather/%2FNorth%20Pole");
+//    }
 }
