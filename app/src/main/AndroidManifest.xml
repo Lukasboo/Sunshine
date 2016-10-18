@@ -13,10 +13,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <provider
-            android:authorities="com.example.lucas.sunshine.app"
-            android:name=".data.WeatherProvider" />
-        
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -46,6 +42,9 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <provider
+            android:authorities="com.example.lucas.sunshine.app"
+            android:name=".data.WeatherProvider" />
     </application>
 
 </manifest>
