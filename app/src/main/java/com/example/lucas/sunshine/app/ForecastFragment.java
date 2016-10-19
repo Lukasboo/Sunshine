@@ -46,10 +46,6 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
     public ForecastFragment() {
     }
 
-
-
-
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -142,7 +138,8 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
 
     public void refresh(){
         fetchWeatherStr = null;
-        FetchWeatherTask fetchWeatherTask = new FetchWeatherTask(getActivity(), adapter);
+        //FetchWeatherTask fetchWeatherTask = new FetchWeatherTask(getActivity(), adapter);
+        FetchWeatherTask fetchWeatherTask = new FetchWeatherTask();
         prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         try {
             fetchWeatherStr = fetchWeatherTask.execute(prefs.getString("location", "14400-BR"), prefs.getString("unit", "metric")).get();
