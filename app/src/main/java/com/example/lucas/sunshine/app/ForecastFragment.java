@@ -3,9 +3,11 @@ package com.example.lucas.sunshine.app;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.format.Time;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,6 +22,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,7 +48,8 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
     ArrayList<String> list;
     ListView listview;
     SharedPreferences prefs;
-    String[] fetchWeatherStr;
+    //String[] fetchWeatherStr;
+    String fetchWeatherStr;
 
 
     public ForecastFragment() {
@@ -106,7 +115,7 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
             case R.id.map_settings:
                 Uri geoLocation = null;
                 try {
-                    geoLocation = Uri.parse(valueOf(getGeoLocationDataFromJson(fetchWeatherStr[0])));
+                    geoLocation = Uri.parse(valueOf(getGeoLocationDataFromJson(fetchWeatherStr)));
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -122,8 +131,8 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
         startActivity(intent);
     }
 
-    private void updateWeather(){
-        refresh();
+    //private void updateWeather(){
+        /*refresh();
         list = new ArrayList<>(
                 Arrays.asList(fetchWeatherStrDates));
         adapter.clear();
@@ -133,11 +142,25 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
                 list);
 
         listview.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
+        adapter.notifyDataSetChanged();*/
+    //}
+
+    private void updateWeather() {
+        FetchWeatherTask weatherTask = new FetchWeatherTask(getActivity(), adapter);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String location = prefs.getString(getString(R.string.pref_location_key),
+                getString(R.string.pref_location_default_value));
+
+
+    }
+
+    public void onStart() {
+        super.onStart();
+        updateWeather();
     }
 
     public void refresh(){
-        fetchWeatherStr = null;
+        /*fetchWeatherStr = null;
         //FetchWeatherTask fetchWeatherTask = new FetchWeatherTask(getActivity(), adapter);
         FetchWeatherTask fetchWeatherTask = new FetchWeatherTask();
         prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
@@ -150,10 +173,10 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
         }
 
         try {
-            fetchWeatherStrDates = getWeatherDataFromJson(fetchWeatherStr[0], 7);
+            fetchWeatherStrDates = getWeatherDataFromJson(fetchWeatherStr, 7);
         } catch (JSONException e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
     public void showMap(Uri geoLocation) {
@@ -289,5 +312,98 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
         return resultStrs;
 
     }
+
+    /*class FetchWeatherTask extends AsyncTask<String, Void, String> {
+
+        private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
+
+        @Override
+        protected String doInBackground(String... params) {
+
+            HttpURLConnection urlConnection = null;
+            BufferedReader reader = null;
+
+            // Will contain the raw JSON response as a string.
+            String forecastJsonStr = null;
+            String[] weatherStr = null;
+            try {
+                // Construct the URL for the OpenWeatherMap query
+                // Possible parameters are avaiable at OWM's forecast API page, at
+                // http://openweathermap.org/API#forecast
+                //URL url = new URL("http://api.openweathermap.org/data/2.5/forecast/?q=Franca,SP&APPID=349e9189951daec1d08c3b15dccebe86");
+                //
+                //URL url = new URL("http://api.openweathermap.org/data/2.5/forecast/daily?zip=14400,BR&APPID=349e9189951daec1d08c3b15dccebe86&mode=json&units=metric&cnt=7");
+
+                //certa
+                //http://api.openweathermap.org/data/2.5/forecast/daily?zip=14400-BR&APPID=349e9189951daec1d08c3b15dccebe86&mode=json&units=metric&cnt=7
+                //http://api.openweathermap.org/data/2.5/forecast/daily?zip=14400-BR&APPID=349e9189951daec1d08c3b15dccebe86&mode=json&units=metric&cnt=7
+                //.appendQueryParameter("zip", "14400-BR")
+
+                Uri.Builder uri = new Uri.Builder();
+                uri.scheme("http")
+                        .authority("api.openweathermap.org")
+                        .appendPath("data")
+                        .appendPath("2.5")
+                        .appendPath("forecast")
+                        .appendEncodedPath("daily")
+                        .appendQueryParameter("zip", params[0])
+                        .appendQueryParameter("APPID", "349e9189951daec1d08c3b15dccebe86")
+                        .appendQueryParameter("mode", "json")
+                        .appendQueryParameter("units", params[1])
+                        .appendQueryParameter("cnt", "7");
+                String urlBuild = uri.build().toString();
+                Log.d(LOG_TAG, urlBuild);
+                // Create the request to OpenWeatherMap, and open the connection
+                URL url = new URL(urlBuild);
+                urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setRequestMethod("GET");
+                urlConnection.connect();
+
+                // Read the input stream into a String
+                InputStream inputStream = urlConnection.getInputStream();
+                StringBuffer buffer = new StringBuffer();
+                if (inputStream == null) {
+                    // Nothing to do.
+                    return null;
+                }
+                reader = new BufferedReader(new InputStreamReader(inputStream));
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
+                    // But it does make debugging a *lot* easier if you print out the completed
+                    // buffer for debugging.
+                    buffer.append(line + "\n");
+                }
+
+                if (buffer.length() == 0) {
+                    // Stream was empty.  No point in parsing.
+                    return null;
+                }
+                forecastJsonStr = buffer.toString();
+                //weatherStr = buffer.toString();
+            } catch (IOException e) {
+                Log.e(LOG_TAG, "Error ", e);
+                // If the code didn't successfully get the weather data, there's no point in attemping
+                // to parse it.
+                return null;
+            } finally{
+                if (urlConnection != null) {
+                    urlConnection.disconnect();
+                }
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (final IOException e) {
+                        Log.e("ForecastFragment", "Error closing stream", e);
+                    }
+                }
+            }
+            //return weatherStr;
+            return forecastJsonStr;
+            //return null;
+        }
+
+    }*/
 
 }
