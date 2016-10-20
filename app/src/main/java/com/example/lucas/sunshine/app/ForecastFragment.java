@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -16,6 +17,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.lucas.sunshine.app.data.WeatherContract;
@@ -34,17 +36,51 @@ import static java.lang.String.valueOf;
 
 public class ForecastFragment extends android.support.v4.app.Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    private static final int FORECAST_LOADER = 0;
+    private static final String[] FORECAST_COLUMNS = {
+            // In this case the id needs to be fully qualified with a table name, since
+            // the content provider joins the location & weather tables in the background
+            // (both have an _id column)
+            // On the one hand, that's annoying.  On the other, you can search the weather table
+            // using the location set by the user, which is only in the Location table.
+            // So the convenience is worth it.
+            WeatherContract.WeatherEntry.TABLE_NAME + "." + WeatherContract.WeatherEntry._ID,
+            WeatherContract.WeatherEntry.COLUMN_DATE,
+            WeatherContract.WeatherEntry.COLUMN_SHORT_DESC,
+            WeatherContract.WeatherEntry.COLUMN_MAX_TEMP,
+            WeatherContract.WeatherEntry.COLUMN_MIN_TEMP,
+            WeatherContract.LocationEntry.COLUMN_LOCATION_SETTING,
+            WeatherContract.WeatherEntry.COLUMN_WEATHER_ID,
+            WeatherContract.LocationEntry.COLUMN_COORD_LAT,
+            WeatherContract.LocationEntry.COLUMN_COORD_LONG
+    };
+
+    // These indices are tied to FORECAST_COLUMNS.  If FORECAST_COLUMNS changes, these
+    // must change.
+    static final int COL_WEATHER_ID = 0;
+    static final int COL_WEATHER_DATE = 1;
+    static final int COL_WEATHER_DESC = 2;
+    static final int COL_WEATHER_MAX_TEMP = 3;
+    static final int COL_WEATHER_MIN_TEMP = 4;
+    static final int COL_LOCATION_SETTING = 5;
+    static final int COL_WEATHER_CONDITION_ID = 6;
+    static final int COL_COORD_LAT = 7;
+    static final int COL_COORD_LONG = 8;
+
+    /*private static final int FORECAST_LOADER = 0;
     String postCode = "14400-BR"; //not use more
     private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
-    public ForecastAdapter mForecastAdapter;
     String[] fetchWeatherStrDates;
     ArrayList<String> list;
-    ListView listview;
     SharedPreferences prefs;
-    //String[] fetchWeatherStr;
     String[] fetchWeatherStr;
-    String mCurFilter;
+    String mCurFilter;*/
+
+    public ForecastAdapter mForecastAdapter;
+    String[] fetchWeatherStr;
+    ListView listview;
+    String mLocation;
+    private static final String FORECASTFRAGMENT_TAG = "ForecastFragment";
+    private static final int FORECAST_LOADER = 0;
 
     public ForecastFragment() {
     }
@@ -56,6 +92,9 @@ public class ForecastFragment extends android.support.v4.app.Fragment implements
         // Prepare the loader.  Either re-connect with an existing one,
         // or start a new one.
         getLoaderManager().initLoader(0, null, this);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        mLocation = prefs.getString(getString(R.string.pref_location_key),
+                getString(R.string.pref_location_default_value));
     }
 
     @Override
@@ -104,6 +143,23 @@ public class ForecastFragment extends android.support.v4.app.Fragment implements
 
         listview = (ListView) rootView.findViewById(R.id.listview_forecast);
         listview.setAdapter(mForecastAdapter);
+        listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView adapterView, View view, int position, long l) {
+                // CursorAdapter returns a cursor at the correct position for getItem(), or null
+                // if it cannot seek to that position.
+                Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
+                if (cursor != null) {
+                    String locationSetting = Utility.getPreferredLocation(getActivity());
+                    Intent intent = new Intent(getActivity(), DetailActivity.class)
+                            .setData(WeatherContract.WeatherEntry.buildWeatherLocationWithDate(
+                                    locationSetting, cursor.getLong(COL_WEATHER_DATE)
+                            ));
+                    startActivity(intent);
+                }
+            }
+        });
         /*listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -117,8 +173,6 @@ public class ForecastFragment extends android.support.v4.app.Fragment implements
 
         return rootView;
     }
-
-
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -179,10 +233,10 @@ public class ForecastFragment extends android.support.v4.app.Fragment implements
         weatherTask.execute(location);
     }
 
-    public void onStart() {
+    /*public void onStart() {
         super.onStart();
         updateWeather();
-    }
+    }*/
 
     /*public void refresh(){
         fetchWeatherStr = null;
@@ -349,11 +403,10 @@ public class ForecastFragment extends android.support.v4.app.Fragment implements
 
         return new CursorLoader(getActivity(),
                 weatherForLocationUri,
-                null,
+                FORECAST_COLUMNS,
                 null,
                 null,
                 sortOrder);
-
     }
 
     @Override
@@ -366,97 +419,9 @@ public class ForecastFragment extends android.support.v4.app.Fragment implements
         mForecastAdapter.swapCursor(null);
     }
 
-    /*class FetchWeatherTask extends AsyncTask<String, Void, String> {
-
-        private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
-
-        @Override
-        protected String doInBackground(String... params) {
-
-            HttpURLConnection urlConnection = null;
-            BufferedReader reader = null;
-
-            // Will contain the raw JSON response as a string.
-            String forecastJsonStr = null;
-            String[] weatherStr = null;
-            try {
-                // Construct the URL for the OpenWeatherMap query
-                // Possible parameters are avaiable at OWM's forecast API page, at
-                // http://openweathermap.org/API#forecast
-                //URL url = new URL("http://api.openweathermap.org/data/2.5/forecast/?q=Franca,SP&APPID=349e9189951daec1d08c3b15dccebe86");
-                //
-                //URL url = new URL("http://api.openweathermap.org/data/2.5/forecast/daily?zip=14400,BR&APPID=349e9189951daec1d08c3b15dccebe86&mode=json&units=metric&cnt=7");
-
-                //certa
-                //http://api.openweathermap.org/data/2.5/forecast/daily?zip=14400-BR&APPID=349e9189951daec1d08c3b15dccebe86&mode=json&units=metric&cnt=7
-                //http://api.openweathermap.org/data/2.5/forecast/daily?zip=14400-BR&APPID=349e9189951daec1d08c3b15dccebe86&mode=json&units=metric&cnt=7
-                //.appendQueryParameter("zip", "14400-BR")
-
-                Uri.Builder uri = new Uri.Builder();
-                uri.scheme("http")
-                        .authority("api.openweathermap.org")
-                        .appendPath("data")
-                        .appendPath("2.5")
-                        .appendPath("forecast")
-                        .appendEncodedPath("daily")
-                        .appendQueryParameter("zip", params[0])
-                        .appendQueryParameter("APPID", "349e9189951daec1d08c3b15dccebe86")
-                        .appendQueryParameter("mode", "json")
-                        .appendQueryParameter("units", params[1])
-                        .appendQueryParameter("cnt", "7");
-                String urlBuild = uri.build().toString();
-                Log.d(LOG_TAG, urlBuild);
-                // Create the request to OpenWeatherMap, and open the connection
-                URL url = new URL(urlBuild);
-                urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setRequestMethod("GET");
-                urlConnection.connect();
-
-                // Read the input stream into a String
-                InputStream inputStream = urlConnection.getInputStream();
-                StringBuffer buffer = new StringBuffer();
-                if (inputStream == null) {
-                    // Nothing to do.
-                    return null;
-                }
-                reader = new BufferedReader(new InputStreamReader(inputStream));
-
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
-                    // But it does make debugging a *lot* easier if you print out the completed
-                    // buffer for debugging.
-                    buffer.append(line + "\n");
-                }
-
-                if (buffer.length() == 0) {
-                    // Stream was empty.  No point in parsing.
-                    return null;
-                }
-                forecastJsonStr = buffer.toString();
-                //weatherStr = buffer.toString();
-            } catch (IOException e) {
-                Log.e(LOG_TAG, "Error ", e);
-                // If the code didn't successfully get the weather data, there's no point in attemping
-                // to parse it.
-                return null;
-            } finally{
-                if (urlConnection != null) {
-                    urlConnection.disconnect();
-                }
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (final IOException e) {
-                        Log.e("ForecastFragment", "Error closing stream", e);
-                    }
-                }
-            }
-            //return weatherStr;
-            return forecastJsonStr;
-            //return null;
-        }
-
-    }*/
+    public void onLocationChanged(){
+        updateWeather();
+        getLoaderManager().restartLoader(FORECAST_LOADER, null, this);
+    }
 
 }
