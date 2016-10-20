@@ -5,6 +5,10 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.text.format.Time;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -24,13 +28,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import static java.lang.String.valueOf;
-
 /**
  * Created by lucas on 01/10/16.
  */
 
-public class ForecastFragment extends android.support.v4.app.Fragment {
+public class ForecastFragment extends android.support.v4.app.Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
+    private static final int FORECAST_LOADER = 0;
     String postCode = "14400-BR"; //not use more
     private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
     public ForecastAdapter mForecastAdapter;
@@ -40,9 +44,18 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
     SharedPreferences prefs;
     //String[] fetchWeatherStr;
     String[] fetchWeatherStr;
-
+    String mCurFilter;
 
     public ForecastFragment() {
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+        // Prepare the loader.  Either re-connect with an existing one,
+        // or start a new one.
+        getLoaderManager().initLoader(0, null, this);
     }
 
     @Override
@@ -88,7 +101,7 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
                 R.id.list_item_forecast_textview,
                 list);*/
 
-        setHasOptionsMenu(true);
+
         listview = (ListView) rootView.findViewById(R.id.listview_forecast);
         listview.setAdapter(mForecastAdapter);
         /*listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -100,6 +113,8 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
                 startActivity(intent);
             }
         });*/
+        getLoaderManager().initLoader(0, null, this);
+
         return rootView;
     }
 
@@ -321,6 +336,34 @@ public class ForecastFragment extends android.support.v4.app.Fragment {
 
         return resultStrs;
 
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+
+        String locationSetting = Utility.getPreferredLocation(getActivity());
+
+        String sortOrder = WeatherContract.WeatherEntry.COLUMN_DATE + " ASC";
+        Uri weatherForLocationUri = WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(
+                locationSetting, System.currentTimeMillis());
+
+        return new CursorLoader(getActivity(),
+                weatherForLocationUri,
+                null,
+                null,
+                null,
+                sortOrder);
+
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        mForecastAdapter.swapCursor(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        mForecastAdapter.swapCursor(null);
     }
 
     /*class FetchWeatherTask extends AsyncTask<String, Void, String> {
