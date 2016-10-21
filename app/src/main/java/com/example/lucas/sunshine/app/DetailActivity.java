@@ -32,6 +32,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.lucas.sunshine.app.data.WeatherContract.WeatherEntry;
@@ -73,7 +74,7 @@ public class DetailActivity extends ActionBarActivity {
     /**
      * A placeholder fragment containing a simple view.
      */
-    public static class DetailFragment extends Fragment implements LoaderCallbacks<Cursor> {
+    /*public static class DetailFragment extends Fragment implements LoaderCallbacks<Cursor> {
 
         private static final String LOG_TAG = DetailFragment.class.getSimpleName();
 
@@ -90,6 +91,9 @@ public class DetailActivity extends ActionBarActivity {
                 WeatherEntry.COLUMN_SHORT_DESC,
                 WeatherEntry.COLUMN_MAX_TEMP,
                 WeatherEntry.COLUMN_MIN_TEMP,
+                WeatherEntry.COLUMN_HUMIDITY,
+                WeatherEntry.COLUMN_WIND_SPEED,
+                WeatherEntry.COLUMN_PRESSURE
         };
 
         // these constants correspond to the projection defined above, and must change if the
@@ -99,6 +103,9 @@ public class DetailActivity extends ActionBarActivity {
         private static final int COL_WEATHER_DESC = 2;
         private static final int COL_WEATHER_MAX_TEMP = 3;
         private static final int COL_WEATHER_MIN_TEMP = 4;
+        private static final int COL_WEATHER_HUMIDITY = 5;
+        private static final int COL_WEATHER_WIND_SPEED = 6;
+        private static final int COL_WEATHER_PRESSURE = 7;
 
         public DetailFragment() {
             setHasOptionsMenu(true);
@@ -174,24 +181,49 @@ public class DetailActivity extends ActionBarActivity {
 
             boolean isMetric = Utility.isMetric(getActivity());
 
-            String high = Utility.formatTemperature(
+            String high = Utility.formatTemperature(getContext(),
                     data.getDouble(COL_WEATHER_MAX_TEMP), isMetric);
 
-            String low = Utility.formatTemperature(
+            String low = Utility.formatTemperature(getContext(),
                     data.getDouble(COL_WEATHER_MIN_TEMP), isMetric);
 
-            mForecast = String.format("%s - %s - %s/%s", dateString, weatherDescription, high, low);
+            String humidity = data.getString(COL_WEATHER_HUMIDITY);
+
+            String wind = data.getString(COL_WEATHER_WIND_SPEED);
+
+            String pressure = data.getString(COL_WEATHER_PRESSURE);
+
+            TextView list_item_date_textview = (TextView) getView().findViewById(R.id.list_item_pressure_textview);
+            TextView list_item_high_textview = (TextView) getView().findViewById(R.id.list_item_high_textview);
+            TextView list_item_low_textview = (TextView) getView().findViewById(R.id.list_item_low_textview);
+            ImageView list_item_icon = (ImageView) getView().findViewById(R.id.list_item_icon);
+            TextView list_item_forecast_textview = (TextView) getView().findViewById(R.id.list_item_forecast_textview);
+            TextView list_item_humidity_textview = (TextView) getView().findViewById(R.id.list_item_humidity_textview);
+            TextView list_item_wind_textview = (TextView) getView().findViewById(R.id.list_item_wind_textview);
+            TextView list_item_pressure_textview = (TextView) getView().findViewById(R.id.list_item_pressure_textview);
+
+            list_item_date_textview.setText(dateString);
+            list_item_high_textview.setText(high);
+            list_item_low_textview.setText(low);
+            //list_item_icon.setT
+            list_item_forecast_textview.setText(weatherDescription);
+            list_item_humidity_textview.setText(humidity);
+            list_item_wind_textview.setText(wind);
+            list_item_pressure_textview.setText(pressure);
+
+
+            /*mForecast = String.format("%s - %s - %s/%s", dateString, weatherDescription, high, low, humidity, wind, pressure);
 
             TextView detailTextView = (TextView)getView().findViewById(R.id.detail_text);
-            detailTextView.setText(mForecast);
+            detailTextView.setText(mForecast);*/
 
             // If onCreateOptionsMenu has already happened, we need to update the share intent now.
-            if (mShareActionProvider != null) {
+            /*if (mShareActionProvider != null) {
                 mShareActionProvider.setShareIntent(createShareForecastIntent());
             }
         }
 
         @Override
         public void onLoaderReset(Loader<Cursor> loader) { }
-    }
+    }*/
 }
