@@ -81,6 +81,8 @@ public class ForecastFragment extends android.support.v4.app.Fragment implements
     private static final String FORECASTFRAGMENT_TAG = "ForecastFragment";
     private static final int FORECAST_LOADER = 0;
     private int mPosition;
+    private int actualPosition;
+    private boolean mUseTodayLayout;
 
     public ForecastFragment() {
     }
@@ -97,6 +99,14 @@ public class ForecastFragment extends android.support.v4.app.Fragment implements
                 getString(R.string.pref_location_default_value));
     }
 
+    /*@Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (savedInstanceState!=null) {
+            listview.setSelection(savedInstanceState.getInt("scrollPosition"));
+        }
+    }*/
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -112,6 +122,7 @@ public class ForecastFragment extends android.support.v4.app.Fragment implements
                 null, null, null, sortOrder);
 
         mForecastAdapter = new ForecastAdapter(getActivity(), cur, 0);
+        mForecastAdapter.setUseTodayLayout(mUseTodayLayout);
 
         /*mForecastAdapter =
                 new ArrayAdapter<String>(
@@ -177,7 +188,22 @@ public class ForecastFragment extends android.support.v4.app.Fragment implements
         });*/
         getLoaderManager().initLoader(0, null, this);
 
+        if (savedInstanceState != null && savedInstanceState.containsKey("scrollPosition")) {
+            mPosition = savedInstanceState.getInt("scrollPosition");
+        }
+
         return rootView;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        if (mPosition != ListView.INVALID_POSITION) {
+            outState.putInt("SELECTED_KEY", mPosition);
+        }
+
+        //int index = listview.getFirstVisiblePosition();
+        //outState.putInt("scrollPosition", index);
     }
 
     @Override
@@ -372,6 +398,13 @@ public class ForecastFragment extends android.support.v4.app.Fragment implements
         return resultStrs;
     }
 
+    public void setUseTodayLayout(boolean useTodayLayout) {
+        mUseTodayLayout = useTodayLayout;
+        if (mForecastAdapter != null) {
+            mForecastAdapter.setUseTodayLayout(mUseTodayLayout);
+        }
+    }
+
     private String getGeoLocationDataFromJson(String[] forecastJsonStr)
             throws JSONException {
 
@@ -418,6 +451,8 @@ public class ForecastFragment extends android.support.v4.app.Fragment implements
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         mForecastAdapter.swapCursor(data);
+        //listview.setSelection(mPosition);
+        listview.smoothScrollToPosition(mPosition);
     }
 
     @Override

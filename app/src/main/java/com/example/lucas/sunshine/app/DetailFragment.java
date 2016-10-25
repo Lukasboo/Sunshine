@@ -36,7 +36,7 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
 
     private static final String FORECAST_SHARE_HASHTAG = " #SunshineApp";
 
-    private ShareActionProvider mShareActionProvider;
+    private android.support.v7.widget.ShareActionProvider mShareActionProvider;
     private String mForecast;
     private Uri mUri;
 
@@ -119,9 +119,9 @@ public class DetailFragment extends Fragment implements LoaderManager.LoaderCall
         mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
 
         // If onLoadFinished happens before this, we can go ahead and set the share intent now.
-        if (mForecast != null) {
+        /*if (mForecast != null) {
             mShareActionProvider.setShareIntent(createShareForecastIntent());
-        }
+        }*/
     }
 
     private Intent createShareForecastIntent() {
