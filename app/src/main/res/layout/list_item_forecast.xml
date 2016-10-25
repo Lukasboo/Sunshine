@@ -7,6 +7,7 @@
     android:orientation="horizontal"
     android:minHeight="?android:attr/listPreferredItemHeight"
     android:padding="16dp"
+    android:background="@drawable/touch_selector"
     tools:context=".MainActivity">
 
     <ImageView

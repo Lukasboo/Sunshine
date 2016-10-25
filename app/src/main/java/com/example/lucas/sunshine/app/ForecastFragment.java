@@ -27,7 +27,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 
 import static java.lang.String.valueOf;
 /**
@@ -81,6 +80,7 @@ public class ForecastFragment extends android.support.v4.app.Fragment implements
     String mLocation;
     private static final String FORECASTFRAGMENT_TAG = "ForecastFragment";
     private static final int FORECAST_LOADER = 0;
+    private int mPosition;
 
     public ForecastFragment() {
     }
@@ -152,11 +152,17 @@ public class ForecastFragment extends android.support.v4.app.Fragment implements
                 Cursor cursor = (Cursor) adapterView.getItemAtPosition(position);
                 if (cursor != null) {
                     String locationSetting = Utility.getPreferredLocation(getActivity());
-                    Intent intent = new Intent(getActivity(), DetailActivity.class)
+                    ((Callback) getActivity())
+                            .onItemSelected(WeatherContract.WeatherEntry.buildWeatherLocationWithDate(
+                            locationSetting, cursor.getLong(COL_WEATHER_DATE)
+                    ));
+
+                    mPosition = position;
+                    /*Intent intent = new Intent(getActivity(), DetailActivity.class)
                             .setData(WeatherContract.WeatherEntry.buildWeatherLocationWithDate(
                                     locationSetting, cursor.getLong(COL_WEATHER_DATE)
                             ));
-                    startActivity(intent);
+                    startActivity(intent);*/
                 }
             }
         });
@@ -423,5 +429,13 @@ public class ForecastFragment extends android.support.v4.app.Fragment implements
         updateWeather();
         getLoaderManager().restartLoader(FORECAST_LOADER, null, this);
     }
+
+    public interface Callback {
+        /**
+        * DetailFragmentCallback for when an item has been selected.
+        */
+        public void onItemSelected(Uri dateUri);
+    }
+
 
 }

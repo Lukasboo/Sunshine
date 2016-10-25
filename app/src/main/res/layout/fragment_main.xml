@@ -19,6 +19,7 @@
     <ListView
         android:id="@+id/listview_forecast"
         android:padding="5dp"
+        style="@style/ForecastListStyle"
         android:layout_marginTop="40dp"
         android:layout_width="match_parent"
         android:layout_height="457dp" />

@@ -106,11 +106,36 @@ public class ForecastAdapter extends CursorAdapter {
         /*TextView tv = (TextView)view;
         tv.setText(convertCursorRowToUXFormat(cursor));*/
 
+        int viewType = getItemViewType(cursor.getPosition());
+        switch (viewType) {
+            case VIEW_TYPE_TODAY: {
+                viewHolder.iconView.setImageResource(Utility.getArtResourceForWeatherCondition(
+                        cursor.getInt(ForecastFragment.COL_WEATHER_CONDITION_ID)));
+                break;
+            }
+            case VIEW_TYPE_FUTURE_DAY: {
+                viewHolder.iconView.setImageResource(Utility.getIconResourceForWeatherCondition(
+                        cursor.getInt(ForecastFragment.COL_WEATHER_CONDITION_ID)));
+                break;
+            }
+        }
+
+
         // Read weather icon ID from cursor
-        int weatherId = cursor.getInt(ForecastFragment.COL_WEATHER_ID);
+        //int weatherId = cursor.getInt(ForecastFragment.COL_WEATHER_ID);
+        //int weatherId = cursor.getInt(Integer.parseInt(WeatherContract.WeatherEntry.COLUMN_WEATHER_ID));
+
+        //Log.d("WEATHERID", String.valueOf(weatherId));
         // Use placeholder image for now
         //ImageView iconView = (ImageView) view.findViewById(R.id.list_item_icon);
-        viewHolder.iconView.setImageResource(R.drawable.ic_launcher);
+        //int teste = ForecastFragment.getIconResourceForWeatherCondition(weatherId);
+        /*Log.d("WEATHERID", String.valueOf(teste));
+        try {
+            viewHolder.iconView.setImageResource(ForecastFragment.getIconResourceForWeatherCondition(weatherId));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }*/
+        //viewHolder.iconView.setImageResource(R.drawable.art_clear);
         //iconView.setImageResource(R.drawable.ic_launcher);
 
         // TODO Read date from cursor
