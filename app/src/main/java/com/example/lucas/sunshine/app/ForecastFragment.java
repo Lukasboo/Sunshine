@@ -1,5 +1,8 @@
 package com.example.lucas.sunshine.app;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -21,6 +24,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.lucas.sunshine.app.data.WeatherContract;
+import com.example.lucas.sunshine.app.service.SunshineService;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -260,10 +264,30 @@ public class ForecastFragment extends android.support.v4.app.Fragment implements
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String location = prefs.getString(getString(R.string.pref_location_key),
                 getString(R.string.pref_location_default_value));*/
-        FetchWeatherTask weatherTask = new FetchWeatherTask(getActivity());
+        /*FetchWeatherTask weatherTask = new FetchWeatherTask(getActivity());
                 String location = Utility.getPreferredLocation(getActivity());
-        weatherTask.execute(location);
+        weatherTask.execute(location);*/
+
+
+        /*Intent intent = new Intent(getActivity(), SunshineService.class);
+        intent.putExtra(SunshineService.LOCATION_QUERY_EXTRA,
+            Utility.getPreferredLocation(getActivity()));
+        getActivity().startService(intent);*/
+
+        Intent alarmIntent = new Intent(getActivity(), SunshineService.AlarmReceiver.class);
+        alarmIntent.putExtra(SunshineService.LOCATION_QUERY_EXTRA, Utility.getPreferredLocation(getActivity()));
+
+        //Wrap in a pending intent which only fires once.
+        PendingIntent pi = PendingIntent.getBroadcast(getActivity(), 0,alarmIntent,PendingIntent.FLAG_ONE_SHOT);//getBroadcast(context, 0, i, 0);
+
+        AlarmManager am=(AlarmManager)getActivity().getSystemService(Context.ALARM_SERVICE);
+
+        //Set the AlarmManager to wake up the system.
+        am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 5000, pi);
+
     }
+
+
 
     /*public void onStart() {
         super.onStart();
