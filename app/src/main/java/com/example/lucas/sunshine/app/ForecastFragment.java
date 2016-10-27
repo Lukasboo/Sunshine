@@ -24,7 +24,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.lucas.sunshine.app.data.WeatherContract;
-import com.example.lucas.sunshine.app.service.SunshineService;
+import com.example.lucas.sunshine.app.sync.SunshineSyncAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -274,7 +274,9 @@ public class ForecastFragment extends android.support.v4.app.Fragment implements
             Utility.getPreferredLocation(getActivity()));
         getActivity().startService(intent);*/
 
-        Intent alarmIntent = new Intent(getActivity(), SunshineService.AlarmReceiver.class);
+
+
+        /*Intent alarmIntent = new Intent(getActivity(), SunshineService.AlarmReceiver.class);
         alarmIntent.putExtra(SunshineService.LOCATION_QUERY_EXTRA, Utility.getPreferredLocation(getActivity()));
 
         //Wrap in a pending intent which only fires once.
@@ -283,7 +285,10 @@ public class ForecastFragment extends android.support.v4.app.Fragment implements
         AlarmManager am=(AlarmManager)getActivity().getSystemService(Context.ALARM_SERVICE);
 
         //Set the AlarmManager to wake up the system.
-        am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 5000, pi);
+        am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 5000, pi);*/
+
+        //SunshineSyncAdapter.syncImmediately(getContext());
+        SunshineSyncAdapter.syncImmediately(getActivity());
 
     }
 
