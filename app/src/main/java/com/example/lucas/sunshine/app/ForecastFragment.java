@@ -1,8 +1,5 @@
 package com.example.lucas.sunshine.app;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -31,8 +28,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
-
-import static java.lang.String.valueOf;
 /**
  * Created by lucas on 01/10/16.
  */
@@ -220,13 +215,13 @@ public class ForecastFragment extends android.support.v4.app.Fragment implements
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
-            case R.id.action_refresh:
+            /*case R.id.action_refresh:
                 updateWeather();
-                return true;
+                return true;*/
             case R.id.action_settings:
                 callSettings();
                 return true;
-            case R.id.map_settings:
+            /*case R.id.map_settings:
                 Uri geoLocation = null;
                 try {
                     geoLocation = Uri.parse(valueOf(getGeoLocationDataFromJson(fetchWeatherStr)));
@@ -234,7 +229,7 @@ public class ForecastFragment extends android.support.v4.app.Fragment implements
                     e.printStackTrace();
                 }
                 showMap(geoLocation);
-                return true;
+                return true;*/
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -499,6 +494,30 @@ public class ForecastFragment extends android.support.v4.app.Fragment implements
         * DetailFragmentCallback for when an item has been selected.
         */
         public void onItemSelected(Uri dateUri);
+    }
+
+    private void openPreferredLocationInMap() {
+    // Using the URI scheme for showing a location found on a map.  This super-handy
+    // intent can is detailed in the "Common Intents" page of Android's developer site:
+    // http://developer.android.com/guide/components/intents-common.html#Maps
+        if ( null != mForecastAdapter ) {
+            Cursor c = mForecastAdapter.getCursor();
+            if ( null != c ) {
+                c.moveToPosition(0);
+                String posLat = c.getString(COL_COORD_LAT);
+                String posLong = c.getString(COL_COORD_LONG);
+                Uri geoLocation = Uri.parse("geo:" + posLat + "," + posLong);
+
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(geoLocation);
+
+                if (intent.resolveActivity(getActivity().getPackageManager()) != null) {
+                startActivity(intent);
+                } else {
+                    //Log.d(LOG_TAG, "Couldn't call " + geoLocation.toString() + ", no receiving apps installed!");
+                }
+            }
+        }
     }
 
 

@@ -8,8 +8,10 @@
     <item
         android:id="@+id/action_settings"
         android:title="Settings"/>
-    <item
+    <!--<item
         android:id="@+id/map_settings"
-        android:title="@string/map_location" />
-
+        android:title="@string/map_location" />-->
+    <item android:id="@+id/action_map"
+        android:title="@string/action_map"
+        app:showAsAction="never" />
 </menu>
